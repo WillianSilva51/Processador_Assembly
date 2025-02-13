@@ -1,8 +1,8 @@
 #pragma once
 
-#include <iostream>
-#include <cstdint>
 #include <fstream>
+#include <bitset>
+#include <sstream>
 
 #include "flags/Flags.hpp"
 #include "memory/Memory.hpp"
@@ -16,6 +16,8 @@ private:
     uint16_t SP;           // Stack Pointer
     Flags flags;           // Flags Register
     Memory memory;         // Memory
+
+    std::string formatHex(const uint16_t &value) const;
 
 public:
     Cpu();
@@ -46,6 +48,6 @@ public:
     void ROL();
 
     void execute();
-    void loadProgram(std::string filename);
+    void loadProgram(const std::string &filename);
     void displayState() const;
 };

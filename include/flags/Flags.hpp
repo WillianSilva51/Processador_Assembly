@@ -1,5 +1,7 @@
 #pragma once
 
+#include <iostream>
+#include <cstdint>
 class Flags
 {
 private:
@@ -49,7 +51,7 @@ public:
         return S;
     }
 
-    void printFlags()
+    void printFlags() const
     {
         std::cout << std::hex << "C: 0x" << C << " Ov: 0x" << Ov << " Z: 0x" << Z << " S: 0x" << S << std::endl;
     }

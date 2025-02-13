@@ -3,6 +3,8 @@
 #include <iostream>
 #include <unordered_map>
 #include <cstdint>
+#include <iomanip>
+#include <stdexcept>
 
 class Memory
 {
@@ -16,7 +18,7 @@ public:
 
     void write(uint16_t address, uint16_t value);
 
-    uint16_t read(uint16_t address);
+    uint16_t read(uint16_t address) const;
 
     void display_accessed() const;
 };
