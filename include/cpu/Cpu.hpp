@@ -1,7 +1,6 @@
 #pragma once
 
 #include <fstream>
-#include <bitset>
 #include <sstream>
 
 #include "flags/Flags.hpp"

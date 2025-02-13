@@ -13,7 +13,7 @@ uint16_t Memory::read(uint16_t address) const
 {
     if (memory.find(address) == memory.end())
     {
-        throw std::range_error("Não existe essa memória");
+        throw std::range_error("Memory address out of range");
     }
 
     return memory.at(address);
@@ -21,6 +21,16 @@ uint16_t Memory::read(uint16_t address) const
 
 void Memory::display_accessed() const
 {
-    for (auto const &x : memory)
+    if (memory.empty())
+    {
+        std::cout << "<NO MEMORY ACCESSED>" << std::endl;
+        return;
+    }
+
+    std::cout << "MEMORY ACCESSED:" << std::endl;
+
+    for (const auto &x : memory)
+    {
         std::cout << std::uppercase << std::hex << std::setfill('0') << std::setw(4) << x.first << ": 0x" << std::setw(4) << x.second << std::endl;
+    }
 }

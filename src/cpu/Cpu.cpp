@@ -48,25 +48,24 @@ std::string Cpu::formatHex(const uint16_t &value) const
 void Cpu::displayState() const
 {
     std::cout << "----------------------------" << std::endl;
+    std::cout << "REGISTERS:" << std::endl;
     for (size_t i = 0; i < 8; i++)
         std::cout << "R[" << i << "]: 0x" << formatHex(REG[i]) << std::endl;
+    std::cout << "----------------------------" << std::endl;
 
     std::cout << "PC: 0x" << formatHex(PC) << std::endl;
     std::cout << "IR: 0x" << formatHex(IR) << std::endl;
     std::cout << "SP: 0x" << formatHex(SP) << std::endl;
 
     std::cout << "----------------------------" << std::endl;
-
-    std::cout << "Memory:" << std::endl;
     memory.display_accessed();
-
     std::cout << "----------------------------" << std::endl;
 
-    std::cout << "Stack:" << std::endl;
+    std::cout << "STACK:" << std::endl;
     // memory.display_stack();
 
     std::cout << "----------------------------" << std::endl;
 
-    std::cout << "Flags:" << std::endl;
+    std::cout << "FLAGS:" << std::endl;
     flags.printFlags();
 }
