@@ -45,7 +45,7 @@ public:
     void MOV(uint16_t instruction);
     void STR();
     void LDR();
-    void ADD();
+    void ADD(uint16_t instruction);
     void SUB();
     void MUL();
     bool AND();
