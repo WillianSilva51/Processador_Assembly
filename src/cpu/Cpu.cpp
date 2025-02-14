@@ -11,6 +11,8 @@ void Cpu::ADD(uint16_t instruction){
     uint16_t regn = (instruction &0x000C) >> 2;
 
     REG[regd] = REG[regm] + REG[regn];
+    flags.setFlags(REG[regm], REG[regn], REG[regd], '+');
+    
     displayState();
 }
 
