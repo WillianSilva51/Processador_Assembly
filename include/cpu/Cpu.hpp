@@ -16,7 +16,25 @@ private:
     Flags flags;           // Flags Register
     Memory memory;         // Memory
 
-    std::string formatHex(const uint16_t &value) const;
+    enum OPCODE
+    {
+        ORTHERS = 0x0,
+        MOVE = 0x1,
+        STORE = 0x2,
+        LOAD = 0x3,
+        ULA_ADD = 0x4,
+        ULA_SUB = 0x5,
+        ULA_MUL = 0x6,
+        ULA_AND = 0x7,
+        ULA_OR = 0x8,
+        ULA_NOT = 0x9,
+        ULA_XOR = 0xA,
+        SHIFT_R = 0xB,
+        SHIFT_L = 0xC,
+        ROTATE_R = 0xD,
+        ROTATE_L = 0xE,
+        EXIT = 0xF
+    };
 
 public:
     Cpu();

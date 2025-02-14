@@ -1,8 +1,10 @@
 #include <iostream>
-#include <bitset>
-#include <cstdint>
+#include <unordered_map>
+#include <chrono>
 
 #include "cpu/Cpu.hpp"
+
+using namespace std;
 
 int main()
 {
@@ -10,28 +12,67 @@ int main()
 
     Cpu cpu;
 
-    cpu.loadProgram("code1.txt");
+    cout << "Bem-vindo ao simulador de CPU!" << endl;
 
-    cpu.displayState();
+    while (true)
+    {
+        cout << "Digite o nome do arquivo de entrada: ";
+        string fileName;
+        cin >> fileName;
+        cin.ignore();
 
-    // Número em hexadecimal
-    // std::string hexStr;
-    // std::cout << "Digite um número hexadecimal: ";
-    // std::cin >> hexStr;
+        try
+        {
+            cpu.loadProgram(fileName);
+            cpu.displayState();
+        }
+        catch (const std::exception &e)
+        {
+            std::cerr << e.what() << '\n';
+            time_t logTime = chrono::system_clock::to_time_t(chrono::system_clock::now());
+            ofstream logFile("log/log.txt", ios::app);
+            logFile << put_time(localtime(&logTime), "%Y-%m-%d %H:%M:%S") << " - " << e.what() << '\n';
+            logFile.close();
+        }
 
-    // Converter o hexadecimal para inteiro
-    // uint16_t hexValue = static_cast<uint16_t>(std::stoi(hexStr, nullptr, 16));
+        cout << "Deseja carregar outro arquivo? (s/n): ";
 
-    // Converter para binário usando bitset
-    // std::bitset<16> binValue(hexValue); // 16 bits de comprimento (pode ser ajustado conforme necessário)
+        char response;
+        cin >> response;
 
-    // Exibir o valor binário
-    //  std::cout << "O número em binário é: " << binValue << std::endl;
+        switch (response)
+        {
+        case 's':
+        case 'S':
+            break;
 
-    // std::cout << "O número em hexadecimal é: " << hexStr << std::endl;
+        case 'n':
+        case 'N':
+            return 0;
 
-    return 0;
+        default:
+            cout << "Opção inválida!" << endl;
+            cin.ignore();
+            break;
+        }
+    }
 }
+
+// Número em hexadecimal
+// std::string hexStr;
+// std::cout << "Digite um número hexadecimal: ";
+// std::cin >> hexStr;
+
+// Converter o hexadecimal para inteiro
+// uint16_t hexValue = static_cast<uint16_t>(std::stoi(hexStr, nullptr, 16));
+
+// Converter para binário usando bitset
+// std::bitset<16> binValue(hexValue); // 16 bits de comprimento (pode ser ajustado conforme necessário)
+
+// Exibir o valor binário
+//  std::cout << "O número em binário é: " << binValue << std::endl;
+
+// std::cout << "O número em hexadecimal é: " << hexStr << std::endl;
 
 /**
  *     uint16_t value = 0x731;

@@ -1,15 +1,22 @@
 #pragma once
 
 #include <iostream>
-#include <unordered_map>
+#include <vector>
 #include <cstdint>
 #include <iomanip>
 #include <stdexcept>
+#include <algorithm>
+#include <bitset>
+
+inline std::ostream &formatHex(std::ostream &os)
+{
+    return os << std::hex << std::setw(4) << std::setfill('0') << std::uppercase;
+}
 
 class Memory
 {
 private:
-    std::unordered_map<uint16_t, uint16_t> memory; // Memory
+    mutable std::vector<std::pair<uint8_t, bool>> memory;
 
 public:
     Memory();
@@ -18,7 +25,9 @@ public:
 
     void write(uint16_t address, uint16_t value);
 
-    uint16_t read(uint16_t address) const;
+    uint16_t read(uint8_t address) const;
 
     void display_accessed() const;
+
+    void display_stack(const uint16_t &SP) const;
 };

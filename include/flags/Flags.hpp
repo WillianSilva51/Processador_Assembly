@@ -2,57 +2,79 @@
 
 #include <iostream>
 #include <cstdint>
+#include <bitset>
 class Flags
 {
 private:
-    bool C;
-    bool Ov;
-    bool Z;
-    bool S;
+    std::bitset<4> flags;
+
+    enum FlagsEnum
+    {
+        CARRY,
+        OVERFLOW,
+        ZERO,
+        SIGN
+    };
 
 public:
-    Flags() : C(false), Ov(false), Z(false), S(false) {}
+    Flags() : flags(0) {}
 
     ~Flags() {}
 
     void reset()
     {
-        C = false;
-        Ov = false;
-        Z = false;
-        S = false;
+        flags.reset();
     }
 
-    void setFlags(const uint16_t &result)
+    void setFlags(const uint16_t &a, const uint16_t &b, const uint16_t &result, char operation)
     {
-        C = (result >> 0) & 1;
-        Ov = (result >> 1) & 1;
-        Z = (result == 0);
-        S = (result & 0x8000) != 0;
+        // Carry ocorre se houver um estouro no bit 16 (soma/subtração)
+        flags[CARRY] = (operation == '+' && result < a) || (operation == '-' && a < b) || (operation == '*' && result < a);
+        // 8000  0 8000
+        // Overflow ocorre se dois números positivos resultam em negativo ou vice-versa
+        flags[OVERFLOW] = ((a & 0x8000) != (b & 0x8000)) && ((a & 0x8000) != (result & 0x8000));
+
+        // Zero flag: Se o resultado for zero
+        flags[ZERO] = (result == 0);
+
+        // Sign flag: Se o bit mais significativo for 1 (negativo em complemento de dois)
+        flags[SIGN] = (result & 0x8000) != 0;
     }
 
-    bool getCarry()
+    bool getCarry() const
     {
-        return C;
+        return flags[CARRY];
     }
 
-    bool getOverflow()
+    bool getOverflow() const
     {
-        return Ov;
+        return flags[OVERFLOW];
     }
 
-    bool getZero()
+    bool getZero() const
     {
-        return Z;
+        return flags[ZERO];
     }
 
-    bool getSign()
+    bool getSign() const
     {
-        return S;
+        return flags[SIGN];
     }
 
     void printFlags() const
     {
-        std::cout << std::hex << "C: 0x" << C << " Ov: 0x" << Ov << " Z: 0x" << Z << " S: 0x" << S << std::endl;
+        std::cout << "FLAGS:" << std::endl;
+        std::cout << "C: " << flags[CARRY] << " Ov: " << flags[OVERFLOW] << " Z: " << flags[ZERO] << " S: " << flags[SIGN] << std::endl;
     }
 };
+
+/**
+    void setFlags(const uint16_t &result)
+    {
+        flags[CARRY] = (result >> 0) & 1;
+        flags[OVERFLOW] = (result >> 1) & 1;
+        flags[ZERO] = (result == 0);
+        flags[SIGN] = (result & 0x8000) != 0;
+    }
+};
+ */

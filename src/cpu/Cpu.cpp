@@ -6,23 +6,24 @@ Cpu::~Cpu() {}
 
 void Cpu::NOP()
 {
-    std::cout << "NOP Executado" << std::endl;
+    std::cout << "NOP" << std::endl;
     displayState();
 }
 
 void Cpu::HALT()
 {
-    std::cout << "Execução encerrada pelo HALT." << std::endl;
+    std::cout << "HALT" << std::endl;
+    displayState();
     exit(0);
 }
 
 void Cpu::loadProgram(const std::string &filename)
 {
-    std::ifstream file("src/codes/" + filename);
+    std::ifstream file("codes/" + filename);
 
     if (!file || !file.is_open())
     {
-        throw std::runtime_error("Erro ao abrir o arquivo");
+        throw std::runtime_error("ERROR: Could not open file " + filename + ".");
     }
 
     std::string line;
@@ -38,34 +39,24 @@ void Cpu::loadProgram(const std::string &filename)
     file.close();
 }
 
-std::string Cpu::formatHex(const uint16_t &value) const
-{
-    std::stringstream ss;
-    ss << std::uppercase << std::hex << std::setfill('0') << std::setw(4) << value;
-    return ss.str();
-}
-
 void Cpu::displayState() const
 {
     std::cout << "----------------------------" << std::endl;
     std::cout << "REGISTERS:" << std::endl;
     for (size_t i = 0; i < 8; i++)
-        std::cout << "R[" << i << "]: 0x" << formatHex(REG[i]) << std::endl;
+        std::cout << "R[" << i << "]: 0x" << formatHex << REG[i] << std::endl;
     std::cout << "----------------------------" << std::endl;
 
-    std::cout << "PC: 0x" << formatHex(PC) << std::endl;
-    std::cout << "IR: 0x" << formatHex(IR) << std::endl;
-    std::cout << "SP: 0x" << formatHex(SP) << std::endl;
+    std::cout << "PC: 0x" << formatHex << PC << std::endl;
+    std::cout << "IR: 0x" << formatHex << IR << std::endl;
+    std::cout << "SP: 0x" << formatHex << SP << std::endl;
 
     std::cout << "----------------------------" << std::endl;
     memory.display_accessed();
     std::cout << "----------------------------" << std::endl;
 
-    std::cout << "STACK:" << std::endl;
-    // memory.display_stack();
+    memory.display_stack(SP);
 
     std::cout << "----------------------------" << std::endl;
-
-    std::cout << "FLAGS:" << std::endl;
     flags.printFlags();
 }
