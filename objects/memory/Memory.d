@@ -1,1 +1,1 @@
-"Memory.o: src/memory/Memory.cpp" 
+Memory.o: src/memory/Memory.cpp

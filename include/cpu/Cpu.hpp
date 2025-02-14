@@ -42,7 +42,7 @@ public:
 
     void NOP();
     void HALT();
-    void MOV();
+    void MOV(uint16_t instruction);
     void STR();
     void LDR();
     void ADD();

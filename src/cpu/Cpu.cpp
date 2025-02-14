@@ -4,6 +4,24 @@ Cpu::Cpu() : PC(0), IR(0), SP(0x8200), flags(), memory() {}
 
 Cpu::~Cpu() {}
 
+void Cpu::ADD(){
+    
+}
+void Cpu::MOV(uint16_t instruction){
+    
+    uint16_t im_or_reg = (instruction & 0x0800) >> 11;
+    uint16_t reg_dest = (instruction & 0x0700) >> 8;
+    uint16_t src =  (instruction & 0x00FF);
+
+    if(im_or_reg == 0){
+        REG[reg_dest] = src;
+    } else if (im_or_reg == 1){
+        REG[reg_dest] =  REG[src];
+    }
+
+    displayState();
+}
+
 void Cpu::NOP()
 {
     std::cout << "NOP" << std::endl;
