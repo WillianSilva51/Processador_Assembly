@@ -24,7 +24,7 @@ int main()
         try
         {
             cpu.loadProgram(fileName);
-            cpu.displayState();
+            cpu.execute();
         }
         catch (const std::exception &e)
         {

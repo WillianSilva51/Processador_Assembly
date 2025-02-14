@@ -1,1 +1,1 @@
-main.o: src/main/main.cpp
+"main.o: src/main/main.cpp" 

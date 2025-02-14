@@ -4,31 +4,34 @@ Cpu::Cpu() : PC(0), IR(0), SP(0x8200), flags(), memory() {}
 
 Cpu::~Cpu() {}
 
-void Cpu::ADD(uint16_t instruction){
+void Cpu::ADD(uint16_t instruction)
+{
 
     uint16_t regd = (instruction & 0x0700) >> 8;
-    uint16_t regm = (instruction &0x00E0) >> 7;
-    uint16_t regn = (instruction &0x000C) >> 2;
+    uint16_t regm = (instruction & 0x00E0) >> 7;
+    uint16_t regn = (instruction & 0x000C) >> 2;
 
     REG[regd] = REG[regm] + REG[regn];
     flags.setFlags(REG[regm], REG[regn], REG[regd], '+');
-    
+
     displayState();
 }
 
-void Cpu::MOV(uint16_t instruction){
-    
+void Cpu::MOV(uint16_t instruction)
+{
     uint16_t im_or_reg = (instruction & 0x0800) >> 11;
     uint16_t reg_dest = (instruction & 0x0700) >> 8;
-    uint16_t src =  (instruction & 0x00FF);
 
-    if(im_or_reg == 0){
-        REG[reg_dest] = src;
-    } else if (im_or_reg == 1){
-        REG[reg_dest] =  REG[src];
+    if (im_or_reg == 0)
+    {
+        uint16_t regm = (instruction & 0x01E0) >> 5;
+        REG[reg_dest] = REG[regm];
     }
-
-    displayState();
+    else if (im_or_reg == 1)
+    {
+        uint16_t src = (instruction & 0x00FF);
+        REG[reg_dest] = src;
+    }
 }
 
 void Cpu::NOP()
@@ -86,4 +89,44 @@ void Cpu::displayState() const
 
     std::cout << "----------------------------" << std::endl;
     flags.printFlags();
+}
+
+void Cpu::execute()
+{
+    while (true)
+    {
+        IR = memory.read(PC++);
+        std::bitset<16> instruction = (IR << 8) | (memory.read(PC));
+
+        uint16_t opcode = (IR >> 4);
+
+        switch (opcode)
+        {
+        case ORTHERS:
+        {
+            NOP();
+            break;
+        }
+        case MOVE:
+        {
+            MOV(instruction.to_ullong());
+            PC++;
+            break;
+        }
+
+        case ULA_ADD:
+        {
+            ADD(instruction.to_ullong());
+            PC++;
+            break;
+        }
+        case EXIT:
+            HALT();
+            break;
+
+        default:
+            std::cout << "Unknown instruction: 0x" << formatHex << IR << std::endl;
+            break;
+        }
+    }
 }
