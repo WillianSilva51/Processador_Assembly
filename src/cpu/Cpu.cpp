@@ -5,7 +5,7 @@ Cpu::Cpu() : PC(0), IR(0), SP(0x8200), flags(), memory() {}
 Cpu::~Cpu() {}
 
 void Cpu::ADD(uint16_t instruction)
-{  
+{
     uint16_t regd = (instruction & 0x0700) >> 8;
     uint16_t regm = (instruction & 0x00E0) >> 7;
     uint16_t regn = (instruction & 0x003C) >> 2;
@@ -101,7 +101,35 @@ void Cpu::execute()
         {
         case ORTHERS:
         {
-            NOP();
+            uint8_t sub_opcode = (instruction[11] << 2) | (instruction[1] << 1) | (instruction[0]);
+
+            switch (sub_opcode)
+            {
+            case 0:
+                NOP();
+                break;
+
+            case 1: // PSH
+                break;
+
+            case 2: // POP
+                break;
+
+            case 3: // CMP
+                break;
+
+            case 4: // JMP
+                break;
+
+            case 5: // JEQ
+                break;
+
+            case 6: // JLT
+                break;
+
+            case 7: // JGT
+                break;
+            }
             break;
         }
         case MOVE:
@@ -110,6 +138,11 @@ void Cpu::execute()
             PC++;
             break;
         }
+        case STORE:
+            break;
+
+        case LOAD:
+            break;
 
         case ULA_ADD:
         {
@@ -117,8 +150,40 @@ void Cpu::execute()
             PC++;
             break;
         }
+
+        case ULA_SUB:
+            break;
+
+        case ULA_MUL:
+            break;
+
+        case ULA_AND:
+            break;
+
+        case ULA_OR:
+            break;
+
+        case ULA_NOT:
+            break;
+
+        case ULA_XOR:
+            break;
+
+        case SHIFT_R:
+            break;
+
+        case SHIFT_L:
+            break;
+
+        case ROTATE_R:
+            break;
+
+        case ROTATE_L:
+            break;
+
         case EXIT:
             HALT();
+            PC++;
             break;
 
         default:
