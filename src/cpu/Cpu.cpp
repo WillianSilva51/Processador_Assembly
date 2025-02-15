@@ -5,16 +5,13 @@ Cpu::Cpu() : PC(0), IR(0), SP(0x8200), flags(), memory() {}
 Cpu::~Cpu() {}
 
 void Cpu::ADD(uint16_t instruction)
-{
-
+{  
     uint16_t regd = (instruction & 0x0700) >> 8;
     uint16_t regm = (instruction & 0x00E0) >> 7;
-    uint16_t regn = (instruction & 0x000C) >> 2;
+    uint16_t regn = (instruction & 0x003C) >> 2;
 
     REG[regd] = REG[regm] + REG[regn];
     flags.setFlags(REG[regm], REG[regn], REG[regd], '+');
-
-    displayState();
 }
 
 void Cpu::MOV(uint16_t instruction)
