@@ -4,14 +4,76 @@ Cpu::Cpu() : PC(0), IR(0), SP(0x8200), flags(), memory() {}
 
 Cpu::~Cpu() {}
 
+void Cpu::JGT(uint16_t instruction) {
+
+    int16_t im = (instruction & 0x0FFF);
+
+    if (im & 0x0800) {
+        im |= 0xF000;
+    }
+
+    if (flags.getCarry() == 0 && flags.getZero() == 0){
+        PC += im;
+    }
+}
+
+void Cpu::JLT(uint16_t instruction) {
+    
+    int16_t im = (instruction & 0x0FFF);
+
+    if (im & 0x0800) {
+        im |= 0xF000;
+    }
+
+    if (flags.getZero() == 0 && flags.getCarry() == 1) {
+        PC += im;
+    }
+}
+
+void Cpu::JEQ(uint16_t instruction) {
+
+    int16_t im = (instruction & 0x0FFF);
+
+    if (im & 0x0800) {
+        im |= 0xF000;
+    }
+
+    
+    if (flags.getZero() == 1 && flags.getCarry() == 0) {
+        PC += im;
+
+        /*if (PC < 0 || PC > memory()){
+            PC = (PC + MAX_MEMORY) % MAX_MEMORY;
+        }*/
+    }
+}
+
+void Cpu::JMP(uint16_t instruction) {
+
+    int16_t im = (instruction & 0x0FFF);
+
+    if (im & 0x0800) {
+        im |= 0xF000;
+    }
+
+    PC += im;
+}
+
+void Cpu::CMP(uint16_t instruction) {
+    uint16_t Rm = (instruction & 0x01C0) >> 6; 
+    uint16_t Rn = (instruction & 0x0038) >> 3;
+
+    flags.setFlagsCMP(REG[Rm], REG[Rn]);
+}
+
 void Cpu::ADD(uint16_t instruction)
 {
-    uint16_t regd = (instruction & 0x0700) >> 8;
-    uint16_t regm = (instruction & 0x00E0) >> 7;
-    uint16_t regn = (instruction & 0x003C) >> 2;
+    uint16_t Rd = (instruction & 0x0700) >> 8;
+    uint16_t Rm = (instruction & 0x00E0) >> 7;
+    uint16_t Rn = (instruction & 0x003C) >> 2;
 
-    REG[regd] = REG[regm] + REG[regn];
-    flags.setFlags(REG[regm], REG[regn], REG[regd], '+');
+    REG[Rd] = REG[Rm] + REG[Rn];
+    flags.setFlags(REG[Rm], REG[Rn], REG[Rd], '+');
 }
 
 void Cpu::MOV(uint16_t instruction)
@@ -21,8 +83,8 @@ void Cpu::MOV(uint16_t instruction)
 
     if (im_or_reg == 0)
     {
-        uint16_t regm = (instruction & 0x01E0) >> 5;
-        REG[reg_dest] = REG[regm];
+        uint16_t Rg = (instruction & 0x01E0) >> 5;
+        REG[reg_dest] = REG[Rg];
     }
     else if (im_or_reg == 1)
     {
@@ -115,19 +177,28 @@ void Cpu::execute()
             case 2: // POP
                 break;
 
-            case 3: // CMP
+            case 3: 
+                CMP(instruction.to_ullong());
+                PC++;
                 break;
 
-            case 4: // JMP
+            case 4: 
+                JMP(instruction.to_ullong());
+                PC++;
                 break;
 
-            case 5: // JEQ
+            case 5:
+                JEQ(instruction.to_ullong());
+                PC++;
                 break;
 
-            case 6: // JLT
+            case 6:
+                JLT(instruction.to_ullong());
+                PC++;
                 break;
 
-            case 7: // JGT
+            case 7:
+                JGT(instruction.to_ullong());
                 break;
             }
             break;

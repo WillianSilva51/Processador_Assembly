@@ -41,6 +41,14 @@ public:
         flags[SIGN] = (result & 0x8000) != 0;
     }
 
+    void setFlagsCMP(uint16_t Rm, uint16_t Rn){
+
+        flags[ZERO] = (Rm == Rn);
+        flags[CARRY] = (Rm < Rn);
+        flags[SIGN] = (Rm & 0x8000) != 0;
+        
+    }
+
     bool getCarry() const
     {
         return flags[CARRY];
