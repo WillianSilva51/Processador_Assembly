@@ -187,8 +187,12 @@ void Cpu::execute()
             break;
 
         default:
-            std::cout << "Unknown instruction: 0x" << formatHex << IR << std::endl;
-            break;
+        {
+            std::stringstream ss;
+            ss << std::setfill('0') << std::setw(4) << std::hex << IR;
+            throw std::runtime_error("ERROR: Unknown instruction: 0x" + ss.str() + ".");
+        }
+        break;
         }
     }
 }
