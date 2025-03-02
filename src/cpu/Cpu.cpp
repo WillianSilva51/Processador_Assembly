@@ -31,6 +31,41 @@ void Cpu::MOV(uint16_t instruction)
     }
 }
 
+void Cpu::AND(uint16_t instruction)
+{
+    uint16_t regd = (instruction & 0x0700) >> 8;
+    uint16_t regm = (instruction & 0x00E0) >> 7;
+    uint16_t regn = (instruction & 0x003C) >> 2;
+
+    REG[regd] = REG[regm] & REG[regn];
+}
+
+void Cpu::OR(uint16_t instruction)
+{
+    uint16_t regd = (instruction & 0x0700) >> 8;
+    uint16_t regm = (instruction & 0x00E0) >> 7;
+    uint16_t regn = (instruction & 0x003C) >> 2;
+
+    REG[regd] = REG[regm] | REG[regn];
+}
+
+void Cpu::NOT(uint16_t instruction)
+{
+    uint16_t regd = (instruction & 0x0700) >> 8;
+    uint16_t regm = (instruction & 0x00E0) >> 7;
+
+    REG[regd] = ~REG[regm];
+}
+
+void Cpu::XOR(uint16_t instruction)
+{
+    uint16_t regd = (instruction & 0x0700) >> 8;
+    uint16_t regm = (instruction & 0x00E0) >> 7;
+    uint16_t regn = (instruction & 0x003C) >> 2;
+
+    REG[regd] = REG[regm] ^ REG[regn];
+}
+
 void Cpu::NOP()
 {
     std::cout << "NOP" << std::endl;
@@ -158,11 +193,17 @@ void Cpu::execute()
             break;
 
         case ULA_AND:
+        {
+            AND(instruction.to_ullong());
+            PC++;
             break;
-
+        }
         case ULA_OR:
+        {
+            OR(instruction.to_ullong());
+            PC++;
             break;
-
+        }
         case ULA_NOT:
             break;
 

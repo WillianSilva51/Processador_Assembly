@@ -48,10 +48,10 @@ public:
     void ADD(uint16_t instruction);
     void SUB();
     void MUL();
-    bool AND();
-    bool OR();
-    bool NOT();
-    bool XOR();
+    void AND(uint16_t instruction);
+    void OR(uint16_t instruction);
+    void NOT(uint16_t instruction);
+    void XOR(uint16_t instruction);
     void PSH();
     void POP();
     bool CMP();
