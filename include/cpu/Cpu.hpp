@@ -54,11 +54,11 @@ public:
     bool XOR();
     void PSH();
     void POP();
-    bool CMP();
-    void JMP();
-    void JEQ();
-    void JLT();
-    void JGT();
+    void CMP(uint16_t instruction);
+    void JMP(uint16_t instruction);
+    void JEQ(uint16_t instruction);
+    void JLT(uint16_t instruction);
+    void JGT(uint16_t instruction);
     void SHR();
     void SHL();
     void ROR();
