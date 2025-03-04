@@ -66,36 +66,23 @@ void Cpu::JLT(uint16_t instruction) {
     }
 }
 
-void Cpu::JEQ(uint16_t instruction) {
-    int16_t im = (int16_t)(instruction & 0x0FFF);
-
-    if (im & 0x0800) {
-        im |= 0xF000;
-    }
-
-    if (flags.getZero() == 1 && flags.getCarry() == 0) {
-        std::cout << "JEQ para " << (PC + im) << std::endl;
-        PC += im;
-       
-    }
-}
-
 void Cpu::JMP(uint16_t instruction) {
     int16_t im = (int16_t)(instruction & 0x0FFF);
-    
     if (im & 0x0800) { 
         im |= 0xF000;
     }
-
-    int16_t nextPC = PC + im;
-    if (nextPC == PC) {
-        std::cout << "Loop detectado!" << std::endl;
-        return;
-    }
-
-    PC = nextPC;
+    PC += im;
     printRegisters();
+}
 
+void Cpu::JEQ(uint16_t instruction) {
+    int16_t im = (int16_t)(instruction & 0x0FFF);
+    if (im & 0x0800) {
+        im |= 0xF000;
+    }
+    if (flags.getZero() == 1) {
+        PC += im;
+    }
 }
 
 
@@ -210,7 +197,8 @@ void Cpu::displayState() const {
 void Cpu::execute() {
     while (true) {
         IR = memory.read(PC++);
-        std::bitset<16> instruction = (IR << 8) | (memory.read(PC));
+        uint16_t nextPart = memory.read(PC++);
+        std::bitset<16> instruction = (IR << 8) | nextPart;
 
         uint16_t opcode = (IR >> 4);
 
@@ -218,106 +206,32 @@ void Cpu::execute() {
         case ORTHERS:
         {
             uint8_t sub_opcode = (instruction[11] << 2) | (instruction[1] << 1) | (instruction[0]);
-
             switch (sub_opcode) {
-            case 0:
-                NOP();
-                break;
-
-            case 1: // PSH
-                PSH(instruction.to_ullong());
-                PC++;
-                break;
-
-            case 2:
-                POP(instruction.to_ullong());
-                PC++;
-                break;
-
-            case 3:
-                CMP(instruction.to_ullong());
-                PC++;
-                break;
-
-            case 4:
-                JMP(instruction.to_ullong());
-                break;
-
-            case 5:
-                JEQ(instruction.to_ullong());
-                break;
-
-            case 6:
-                JLT(instruction.to_ullong());
-                break;
-
-            case 7:
-                JGT(instruction.to_ullong());
-                break;
+            case 0: NOP(); break;
+            case 1: PSH(instruction.to_ullong()); break;
+            case 2: POP(instruction.to_ullong()); break;
+            case 3: CMP(instruction.to_ullong()); break;
+            case 4: JMP(instruction.to_ullong()); break;
+            case 5: JEQ(instruction.to_ullong()); break;
+            case 6: JLT(instruction.to_ullong()); break;
+            case 7: JGT(instruction.to_ullong()); break;
             }
             break;
         }
         case MOVE:
-        {
             MOV(instruction.to_ullong());
             break;
-        }
-        case STORE:
-            break;
-
-        case LOAD:
-            break;
-
         case ULA_ADD:
-        {
             ADD(instruction.to_ullong());
-            PC++;
             break;
-        }
-
         case ULA_SUB:
             SUB(instruction.to_ullong());
-            PC++;
             break;
-
-        case ULA_MUL:
-            break;
-
-        case ULA_AND:
-            break;
-
-        case ULA_OR:
-            break;
-
-        case ULA_NOT:
-            break;
-
-        case ULA_XOR:
-            break;
-
-        case SHIFT_R:
-            break;
-
-        case SHIFT_L:
-            break;
-
-        case ROTATE_R:
-            break;
-
-        case ROTATE_L:
-            break;
-
         case EXIT:
             HALT();
             break;
-
         default:
-        {
-            std::stringstream ss;
-            ss << std::setfill('0') << std::setw(4) << std::hex << IR;
-            throw std::runtime_error("ERROR: Unknown instruction: 0x" + ss.str() + ".");
-        }
-        break;
+            throw std::runtime_error("ERROR: Unknown instruction.");
         }
     }
 }
