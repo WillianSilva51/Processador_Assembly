@@ -186,7 +186,7 @@ void Cpu::execute() {
                 NOP();
                 break;
 
-            case 1:
+            case 1: // PSH
                 PSH(instruction.to_ullong());
                 break;
 
