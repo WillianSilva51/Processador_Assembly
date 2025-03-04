@@ -52,8 +52,8 @@ public:
     bool OR();
     bool NOT();
     bool XOR();
-    void PSH();
-    void POP();
+    void PSH(uint16_t instruction);
+    void POP(uint16_t instruction);
     void CMP(uint16_t instruction);
     void JMP(uint16_t instruction);
     void JEQ(uint16_t instruction);
