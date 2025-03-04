@@ -8,7 +8,7 @@ void Cpu::PSH(uint16_t instruction){
 
     uint16_t Rn = (instruction & 0x001C) >> 2;
 
-    memory.write(SP, Rn);  
+    memory.write(SP, REG[Rn]);  
     SP--;
 }
 
@@ -63,23 +63,20 @@ void Cpu::JEQ(uint16_t instruction) {
 
 void Cpu::JMP(uint16_t instruction) {
     int16_t im = (int16_t)(instruction & 0x0FFF);
-
-    if (im & 0x0800) {
+    
+    if (im & 0x0800) { 
         im |= 0xF000;
     }
 
-    std::cout << "JMP para " << (PC + im) << std::endl;
-    std::cout << "Deslocamento: " << im << std::endl;
-
     int16_t nextPC = PC + im;
     if (nextPC == PC) {
-        std::cout << "Loop detectado! Salto inválido. PC não mudou." << std::endl;
-        return;  // Não altera o PC se o salto for inválido.
+        std::cout << "Loop detectado!" << std::endl;
+        return;
     }
 
-    std::cout << "JMP para " << nextPC << std::endl;
     PC = nextPC;
 }
+
 
 void Cpu::CMP(uint16_t instruction) {
     uint16_t Rm = (instruction & 0x00E0) >> 5;  // Registrador de origem (Rm)
@@ -95,13 +92,25 @@ void Cpu::CMP(uint16_t instruction) {
     flags.setCarryFlag(val_rm < val_rn);
 }
 
+void Cpu::SUB(uint16_t instruction)
+{
+    uint16_t regd = (instruction & 0x0700) >> 8;
+    uint16_t regm = (instruction & 0x00E0) >> 5;
+    uint16_t regn = (instruction & 0x001C) >> 2;
+
+    REG[regd] = REG[regm] - REG[regn];
+
+    flags.setFlags(REG[regm], REG[regn], REG[regd], '-');
+}
+
+
 void Cpu::ADD(uint16_t instruction) {
     uint16_t regd = (instruction & 0x0700) >> 8; // Valor do Registrador de destino
     uint16_t regm = (instruction & 0x00E0) >> 5; // Valor do primeiro registrador
     uint16_t regn = (instruction & 0x001C) >> 2; // Valor do segundo registrador
 
     REG[regd] = REG[regm] + REG[regn];
-    flags.setFlags(REG[regn], REG[regm], REG[regd], '+');
+    flags.setFlags(REG[regm], REG[regn], REG[regd], '+');
 }
 
 void Cpu::MOV(uint16_t instruction) {
@@ -112,9 +121,13 @@ void Cpu::MOV(uint16_t instruction) {
         uint16_t regm = (instruction & 0x01E0) >> 5;
         REG[reg_dest] = REG[regm];
     } else if (im_or_reg == 1) {
-        uint16_t src = (instruction & 0x00FF);
+        int16_t src = (int16_t)(instruction & 0x00FF);
+        if (src & 0x0080){
+            src |= 0xFF00;
+        }
         REG[reg_dest] = src;
     }
+    
 }
 
 void Cpu::NOP() {
@@ -188,10 +201,12 @@ void Cpu::execute() {
 
             case 1: // PSH
                 PSH(instruction.to_ullong());
+                PC++;
                 break;
 
             case 2:
                 POP(instruction.to_ullong());
+                PC++;
                 break;
 
             case 3:
@@ -231,10 +246,13 @@ void Cpu::execute() {
         case ULA_ADD:
         {
             ADD(instruction.to_ullong());
+            PC++;
             break;
         }
 
         case ULA_SUB:
+            SUB(instruction.to_ullong());
+            PC++;
             break;
 
         case ULA_MUL:

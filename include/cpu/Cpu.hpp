@@ -46,7 +46,7 @@ public:
     void STR();
     void LDR();
     void ADD(uint16_t instruction);
-    void SUB();
+    void SUB(uint16_t instruction);
     void MUL();
     bool AND();
     bool OR();
