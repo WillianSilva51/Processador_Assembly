@@ -59,8 +59,8 @@ public:
     void JEQ();
     void JLT();
     void JGT();
-    void SHR();
-    void SHL();
+    void SHR(uint16_t instruction);
+    void SHL(uint16_t instruction);
     void ROR();
     void ROL();
 

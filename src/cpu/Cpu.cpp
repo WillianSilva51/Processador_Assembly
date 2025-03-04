@@ -66,6 +66,24 @@ void Cpu::XOR(uint16_t instruction)
     REG[regd] = REG[regm] ^ REG[regn];
 }
 
+void Cpu::SHR(uint16_t instruction)
+{
+    uint16_t regd = (instruction >> 8) & ((1 << 3) - 1);
+    uint16_t regm = (instruction >> 5) & ((1 << 3) - 1);
+    uint16_t n = instruction & ((1 << 5) - 1);
+
+    REG[regd] = REG[regm] >> n;
+}
+
+void Cpu::SHL(uint16_t instruction)
+{
+    uint16_t regd = (instruction >> 8) & ((1 << 3) - 1);
+    uint16_t regm = (instruction >> 5) & ((1 << 3) - 1);
+    uint16_t n = instruction & ((1 << 5) - 1);
+
+    REG[regd] = REG[regm] << n;
+}
+
 void Cpu::NOP()
 {
     std::cout << "NOP" << std::endl;
@@ -205,17 +223,30 @@ void Cpu::execute()
             break;
         }
         case ULA_NOT:
-            break;
+        {
+            NOT(instruction.to_ullong());
+            PC++;
 
+            break;
+        }
         case ULA_XOR:
+        {
+            XOR(instruction.to_ullong());
+            PC++;
             break;
-
+        }
         case SHIFT_R:
+        {
+            SHR(instruction.to_ullong());
+            PC++;
             break;
-
+        }
         case SHIFT_L:
+        {
+            SHR(instruction.to_ullong());
+            PC++;
             break;
-
+        }
         case ROTATE_R:
             break;
 
