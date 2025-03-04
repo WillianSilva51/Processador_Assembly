@@ -4,14 +4,116 @@ Cpu::Cpu() : PC(0), IR(0), SP(0x8200), flags(), memory() {}
 
 Cpu::~Cpu() {}
 
+void Cpu::PSH(uint16_t instruction)
+{
+    uint16_t Rn = (instruction & 0x001C) >> 2;
+
+    memory.write(SP, Rn);
+    SP--;
+}
+
+void Cpu::POP(uint16_t instruction)
+{
+    uint16_t Rd = (instruction & 0x0700) >> 8;
+
+    SP++;
+    REG[Rd] = memory.read(SP);
+}
+
+void Cpu::JGT(uint16_t instruction)
+{
+    int16_t im = (int16_t)(instruction & 0x0FFF);
+
+    if (im & 0x0800)
+    {
+        im |= 0xF000;
+    }
+
+    if (flags.getCarry() == 0 && flags.getZero() == 0)
+    {
+        std::cout << "JGT para " << (PC + im) << std::endl;
+        PC += im;
+    }
+}
+
+void Cpu::JLT(uint16_t instruction)
+{
+    int16_t im = (int16_t)(instruction & 0x0FFF);
+
+    if (im & 0x0800)
+    {
+        im |= 0xF000;
+    }
+
+    if (flags.getZero() == 0 && flags.getCarry() == 1)
+    {
+        std::cout << "JLT para " << (PC + im) << std::endl;
+        PC += im;
+    }
+}
+
+void Cpu::JEQ(uint16_t instruction)
+{
+    int16_t im = (int16_t)(instruction & 0x0FFF);
+
+    if (im & 0x0800)
+    {
+        im |= 0xF000;
+    }
+
+    if (flags.getZero() == 1 && flags.getCarry() == 0)
+    {
+        std::cout << "JEQ para " << (PC + im) << std::endl;
+        PC += im;
+    }
+}
+
+void Cpu::JMP(uint16_t instruction)
+{
+    int16_t im = (int16_t)(instruction & 0x0FFF);
+
+    if (im & 0x0800)
+    {
+        im |= 0xF000;
+    }
+
+    std::cout << "JMP para " << (PC + im) << std::endl;
+    std::cout << "Deslocamento: " << im << std::endl;
+
+    int16_t nextPC = PC + im;
+    if (nextPC == PC)
+    {
+        std::cout << "Loop detectado! Salto inválido. PC não mudou." << std::endl;
+        return; // Não altera o PC se o salto for inválido.
+    }
+
+    std::cout << "JMP para " << nextPC << std::endl;
+    PC = nextPC;
+}
+
+void Cpu::CMP(uint16_t instruction)
+{
+    uint16_t Rm = (instruction & 0x00E0) >> 5; // Registrador de origem (Rm)
+    uint16_t Rn = (instruction & 0x001C) >> 2; // Registrador de destino (Rn)
+
+    uint16_t val_rm = REG[Rm]; // Valor de Rm
+    uint16_t val_rn = REG[Rn]; // Valor de Rn
+
+    // Verificando a condição de igualdade (Z = 1 se Rm == Rn)
+    flags.setZeroFlag(val_rm == val_rn);
+
+    // Verificando a condição de carry (C = 1 se Rm < Rn)
+    flags.setCarryFlag(val_rm < val_rn);
+}
+
 void Cpu::ADD(uint16_t instruction)
 {
-    uint16_t regd = (instruction & 0x0700) >> 8;
-    uint16_t regm = (instruction & 0x00E0) >> 7;
-    uint16_t regn = (instruction & 0x003C) >> 2;
+    uint16_t regd = (instruction & 0x0700) >> 8; // Valor do Registrador de destino
+    uint16_t regm = (instruction & 0x00E0) >> 5; // Valor do primeiro registrador
+    uint16_t regn = (instruction & 0x001C) >> 2; // Valor do segundo registrador
 
     REG[regd] = REG[regm] + REG[regn];
-    flags.setFlags(REG[regm], REG[regn], REG[regd], '+');
+    flags.setFlags(REG[regn], REG[regm], REG[regd], '+');
 }
 
 void Cpu::MOV(uint16_t instruction)
@@ -68,18 +170,18 @@ void Cpu::XOR(uint16_t instruction)
 
 void Cpu::SHR(uint16_t instruction)
 {
-    uint16_t regd = (instruction >> 8) & ((1 << 3) - 1);
-    uint16_t regm = (instruction >> 5) & ((1 << 3) - 1);
-    uint16_t n = instruction & ((1 << 5) - 1);
+    uint16_t regd = (instruction >> 8) & 7;
+    uint16_t regm = (instruction >> 5) & 7;
+    uint16_t n = instruction & 31;
 
     REG[regd] = REG[regm] >> n;
 }
 
 void Cpu::SHL(uint16_t instruction)
 {
-    uint16_t regd = (instruction >> 8) & ((1 << 3) - 1);
-    uint16_t regm = (instruction >> 5) & ((1 << 3) - 1);
-    uint16_t n = instruction & ((1 << 5) - 1);
+    uint16_t regd = (instruction >> 8) & 7;
+    uint16_t regm = (instruction >> 5) & 7;
+    uint16_t n = instruction & 31;
 
     REG[regd] = REG[regm] << n;
 }
@@ -163,24 +265,32 @@ void Cpu::execute()
                 break;
 
             case 1: // PSH
+                PSH(instruction.to_ullong());
                 break;
 
-            case 2: // POP
+            case 2:
+                POP(instruction.to_ullong());
                 break;
 
-            case 3: // CMP
+            case 3:
+                CMP(instruction.to_ullong());
+                PC++;
                 break;
 
-            case 4: // JMP
+            case 4:
+                JMP(instruction.to_ullong());
                 break;
 
-            case 5: // JEQ
+            case 5:
+                JEQ(instruction.to_ullong());
                 break;
 
-            case 6: // JLT
+            case 6:
+                JLT(instruction.to_ullong());
                 break;
 
-            case 7: // JGT
+            case 7:
+                JGT(instruction.to_ullong());
                 break;
             }
             break;
@@ -188,7 +298,6 @@ void Cpu::execute()
         case MOVE:
         {
             MOV(instruction.to_ullong());
-            PC++;
             break;
         }
         case STORE:
@@ -200,7 +309,6 @@ void Cpu::execute()
         case ULA_ADD:
         {
             ADD(instruction.to_ullong());
-            PC++;
             break;
         }
 
@@ -226,7 +334,6 @@ void Cpu::execute()
         {
             NOT(instruction.to_ullong());
             PC++;
-
             break;
         }
         case ULA_XOR:
@@ -255,7 +362,6 @@ void Cpu::execute()
 
         case EXIT:
             HALT();
-            PC++;
             break;
 
         default:

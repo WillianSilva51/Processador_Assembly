@@ -52,15 +52,15 @@ public:
     void OR(uint16_t instruction);
     void NOT(uint16_t instruction);
     void XOR(uint16_t instruction);
-    void PSH();
-    void POP();
-    bool CMP();
-    void JMP();
-    void JEQ();
-    void JLT();
-    void JGT();
     void SHR(uint16_t instruction);
     void SHL(uint16_t instruction);
+    void PSH(uint16_t instruction);
+    void POP(uint16_t instruction);
+    void CMP(uint16_t instruction);
+    void JMP(uint16_t instruction);
+    void JEQ(uint16_t instruction);
+    void JLT(uint16_t instruction);
+    void JGT(uint16_t instruction);
     void ROR();
     void ROL();
 
