@@ -4,12 +4,29 @@ Cpu::Cpu() : PC(0), IR(0), SP(0x8200), flags(), memory() {}
 
 Cpu::~Cpu() {}
 
+void Cpu::printRegisters() {
+    std::cout << "----------------------------\n";
+    std::cout << "REGISTERS:\n";
+    for (int i = 0; i < 8; i++) {
+        std::cout << "R[" << i << "]: 0x" 
+                  << std::setw(4) << std::setfill('0') << std::hex << std::uppercase 
+                  << REG[i] << "\n";
+    }
+    std::cout << "----------------------------\n";
+    std::cout << "PC: 0x" << std::setw(4) << std::setfill('0') << std::hex << PC << "\n";
+    std::cout << "IR: 0x" << std::setw(4) << std::setfill('0') << std::hex << IR << "\n";
+    std::cout << "SP: 0x" << std::setw(4) << std::setfill('0') << std::hex << SP << "\n";
+    std::cout << "----------------------------\n";
+}
+
 void Cpu::PSH(uint16_t instruction){
 
     uint16_t Rn = (instruction & 0x001C) >> 2;
 
     memory.write(SP, REG[Rn]);  
     SP--;
+    printRegisters();
+
 }
 
 void Cpu::POP(uint16_t instruction){
@@ -18,6 +35,8 @@ void Cpu::POP(uint16_t instruction){
 
     SP++;
     REG[Rd] = memory.read(SP);
+    printRegisters();
+
 }
 
 void Cpu::JGT(uint16_t instruction) {
@@ -75,6 +94,8 @@ void Cpu::JMP(uint16_t instruction) {
     }
 
     PC = nextPC;
+    printRegisters();
+
 }
 
 
@@ -90,6 +111,8 @@ void Cpu::CMP(uint16_t instruction) {
 
     // Verificando a condição de carry (C = 1 se Rm < Rn)
     flags.setCarryFlag(val_rm < val_rn);
+    printRegisters();
+
 }
 
 void Cpu::SUB(uint16_t instruction)
@@ -101,6 +124,8 @@ void Cpu::SUB(uint16_t instruction)
     REG[regd] = REG[regm] - REG[regn];
 
     flags.setFlags(REG[regm], REG[regn], REG[regd], '-');
+    printRegisters();
+
 }
 
 
@@ -111,6 +136,8 @@ void Cpu::ADD(uint16_t instruction) {
 
     REG[regd] = REG[regm] + REG[regn];
     flags.setFlags(REG[regm], REG[regn], REG[regd], '+');
+    printRegisters();
+
 }
 
 void Cpu::MOV(uint16_t instruction) {
@@ -118,16 +145,14 @@ void Cpu::MOV(uint16_t instruction) {
     uint16_t reg_dest = (instruction & 0x0700) >> 8;
 
     if (im_or_reg == 0) {
-        uint16_t regm = (instruction & 0x01E0) >> 5;
+        uint16_t regm = (instruction & 0x00E0) >> 5;
         REG[reg_dest] = REG[regm];
     } else if (im_or_reg == 1) {
         int16_t src = (int16_t)(instruction & 0x00FF);
-        if (src & 0x0080){
-            src |= 0xFF00;
-        }
         REG[reg_dest] = src;
     }
-    
+    printRegisters();
+
 }
 
 void Cpu::NOP() {

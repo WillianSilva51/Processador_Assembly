@@ -63,6 +63,7 @@ public:
     void SHL();
     void ROR();
     void ROL();
+    void printRegisters();
 
     void execute();
     void loadProgram(const std::string &filename);
