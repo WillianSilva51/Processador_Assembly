@@ -348,10 +348,12 @@ void Cpu::execute()
         }
         case STORE:
         {
+            STR(instruction.to_ullong());
             break;
         }
         case LOAD:
         {
+            LDR(instruction.to_ullong());
             break;
         }
         case ULA_ADD:
@@ -359,7 +361,6 @@ void Cpu::execute()
             ADD(instruction.to_ullong());
             break;
         }
-
         case ULA_SUB:
         {
             SUB(instruction.to_ullong());
@@ -367,6 +368,7 @@ void Cpu::execute()
         }
         case ULA_MUL:
         {
+            MUL(instruction.to_ullong());
             break;
         }
         case ULA_AND:
@@ -401,10 +403,12 @@ void Cpu::execute()
         }
         case ROTATE_R:
         {
+            // ROR(instruction.to_ullong());
             break;
         }
         case ROTATE_L:
         {
+            // ROL(instruction.to_ullong());
             break;
         }
         case EXIT:
