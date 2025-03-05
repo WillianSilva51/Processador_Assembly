@@ -25,9 +25,9 @@ public:
 
     void write(uint16_t address, uint16_t value);
 
-    uint16_t read(uint8_t address) const;
+    uint16_t read(uint16_t address) const;
 
     void display_accessed() const;
 
-    void display_stack(const uint16_t &SP) const;
+    void display_stack() const;
 };
