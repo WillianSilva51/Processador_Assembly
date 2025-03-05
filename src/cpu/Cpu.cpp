@@ -281,9 +281,10 @@ void Cpu::execute()
 {
     while (true)
     {
-        if (PC == final_Address)
+        if (PC >= final_Address)
         {
             std::cout << "Programa finalizado!" << std::endl;
+            displayState();
             break;
         }
 

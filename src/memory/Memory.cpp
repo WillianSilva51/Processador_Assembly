@@ -12,13 +12,6 @@ void Memory::write(uint16_t address, uint16_t value)
     uint8_t low_byte = value & 0xFF;
     uint8_t high_byte = (value >> 8) & 0xFF;
 
-    if (address >= 0x8200)
-    {
-        memory[address] = {high_byte, false};
-        memory[address + 1] = {low_byte, false};
-        return;
-    }
-
     memory[address] = {high_byte, false};
     memory[address + 1] = {low_byte, false};
 }
