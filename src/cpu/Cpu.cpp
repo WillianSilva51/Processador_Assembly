@@ -77,89 +77,72 @@ void Cpu::SHL(uint16_t instruction)
 void Cpu::PSH(uint16_t instruction)
 {
 
+    if (SP <= 0x81F0) {
+        return;
+    }
+
     uint16_t Rn = (instruction & 0x001C) >> 2;
 
     memory.write(SP, REG[Rn]);
-    SP--;
+    SP -= 2;
     printRegisters();
 }
 
 void Cpu::POP(uint16_t instruction)
 {
+    if (SP >= 0x8200){
+        return;
+    }
 
     uint16_t Rd = (instruction & 0x0700) >> 8;
 
-    SP++;
+    SP += 2;
     REG[Rd] = memory.read(SP);
+    printRegisters();
+}
+
+
+void Cpu::JMP(uint16_t instruction)
+{
+    uint16_t im = (instruction & 0x0FFF) >> 2;
+    
+    if ((im & (1 << 8)) != 0)
+    {
+        im |= 0xFE00;
+    }
+    
+    uint16_t nextPC = PC + im;
+    if (nextPC == PC)
+    {
+        return;
+    }
+    
+    PC = nextPC;
     printRegisters();
 }
 
 void Cpu::JGT(uint16_t instruction)
 {
-    int16_t im = (int16_t)(instruction & 0x0FFF);
-
-    if (im & 0x0800)
-    {
-        im |= 0xF000;
-    }
-
     if (flags.getCarry() == 0 && flags.getZero() == 0)
     {
-        std::cout << "JGT para " << (PC + im) << std::endl;
-        PC += im;
+        JMP (instruction);
     }
 }
 
 void Cpu::JLT(uint16_t instruction)
 {
-    int16_t im = (int16_t)(instruction & 0x0FFF);
-
-    if (im & 0x0800)
-    {
-        im |= 0xF000;
-    }
-
     if (flags.getZero() == 0 && flags.getCarry() == 1)
     {
-        std::cout << "JLT para " << (PC + im) << std::endl;
-        PC += im;
+        JMP(instruction);
     }
 }
 
 void Cpu::JEQ(uint16_t instruction)
 {
-    int16_t im = (int16_t)(instruction & 0x0FFF);
-
-    if (im & 0x0800)
-    {
-        im |= 0xF000;
-    }
-
     if (flags.getZero() == 1 && flags.getCarry() == 0)
     {
-        std::cout << "JEQ para " << (PC + im) << std::endl;
-        PC += im;
+       JMP(instruction);
     }
-}
-
-void Cpu::JMP(uint16_t instruction)
-{
-    int16_t im = (int16_t)(instruction & 0x0FFF);
-
-    if (im & 0x0800)
-    {
-        im |= 0xF000;
-    }
-
-    int16_t nextPC = PC + im;
-    if (nextPC == PC)
-    {
-        std::cout << "Loop detectado!" << std::endl;
-        return;
-    }
-
-    PC = nextPC;
-    printRegisters();
 }
 
 void Cpu::CMP(uint16_t instruction)
@@ -305,7 +288,7 @@ void Cpu::execute()
                 NOP();
                 break;
 
-            case 1: // PSH
+            case 1:
                 PSH(instruction.to_ullong());
                 break;
 
