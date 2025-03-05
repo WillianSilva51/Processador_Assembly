@@ -9,13 +9,10 @@ void Cpu::ROL(uint16_t instruction)
     uint16_t Rd = (instruction & 0x0700) >> 8;
     uint16_t Rm = (instruction & 0x00E0) >> 5;
 
-    // Aqui vamos pegar o MSB de REG[Rm] (bit mais à esquerda)
     bool carry_in = (REG[Rm] >> 15) & 1; 
 
-    // A rotação à esquerda: o valor é deslocado para a esquerda, e o carry é adicionado ao final
-    REG[Rd] = (REG[Rm] << 1) | carry_in; // Desloca os bits para a esquerda e adiciona o carry
+    REG[Rd] = (REG[Rm] << 1) | carry_in;
 
-    // Atualizando as flags
     flags.setCarryFlag(carry_in); 
     flags.setZeroFlag(REG[Rd]); 
     flags.setSignFlag(REG[Rd]);
@@ -25,9 +22,9 @@ void Cpu::ROR(uint16_t instruction) {
     uint16_t Rd = (instruction & 0x0700) >> 8;
     uint16_t Rm = (instruction & 0x00E0) >> 5;
 
-    bool carry_in = REG[Rm] & 1;  // Pega o bit menos significativo (carry)
+    bool carry_in = REG[Rm] & 1;
 
-    REG[Rd] = (REG[Rm] >> 1) | (carry_in << 15);  // Desloca para a direita e coloca o carry no bit mais significativo
+    REG[Rd] = (REG[Rm] >> 1) | (carry_in << 15);
 
     flags.setCarryFlag(carry_in);
     flags.setZeroFlag(REG[Rd] == 0);
@@ -97,33 +94,27 @@ void Cpu::SHL(uint16_t instruction)
 
 void Cpu::PSH(uint16_t instruction)
 {
-    std::cout << "Vai escrever" << std::endl;
     if (SP <= 0x81F0)
     {   
-        std:: cout << "entrou" << std::endl;
         return;
     }
 
     uint16_t Rn = (instruction & 0x001C) >> 2;
-    std::cout << Rn << " " << REG[Rn] << std::endl; 
 
-    std::cout << "Vai escrever" << std::endl;
     memory.write(SP, REG[Rn]);
     SP -= 2;
 }
 
 void Cpu::POP(uint16_t instruction)
 {
-    std::cout << "Vai ler" << std::endl;
+
     if (SP > 0x8200)
-    {   
-        std::cout << "entrou" << std::endl;
+    {  
         return;
     }
 
     uint16_t Rd = (instruction & 0x0700) >> 8;
 
-    std::cout << "Vai ler" << std::endl;
     SP += 2;
     REG[Rd] = memory.read(SP);
 }
