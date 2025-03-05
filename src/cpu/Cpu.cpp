@@ -303,7 +303,7 @@ void Cpu::displayState() const
     memory.display_accessed();
     std::cout << "----------------------------" << std::endl;
 
-    memory.display_stack(SP);
+    memory.display_stack();
 
     std::cout << "----------------------------" << std::endl;
     flags.printFlags();

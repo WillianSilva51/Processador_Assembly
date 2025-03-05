@@ -10,12 +10,11 @@ int main()
 {
     setlocale(LC_ALL, "Pt_BR.UTF-8");
 
-    Cpu cpu;
-
     cout << "Bem-vindo ao simulador de CPU!" << endl;
 
     while (true)
     {
+        Cpu cpu;
         cout << "Digite o nome do arquivo de entrada: ";
         string fileName;
         cin >> fileName;
