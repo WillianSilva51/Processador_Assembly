@@ -74,7 +74,7 @@ void Cpu::OR(uint16_t instruction)
 void Cpu::NOT(uint16_t instruction)
 {
     uint16_t regd = (instruction & 0x0700) >> 8;
-    uint16_t regm = (instruction & 0x00E0) >> 7;
+    uint16_t regm = (instruction & 0x00E0) >> 5;
 
     REG[regd] = ~REG[regm];
     flags.setZeroFlag(REG[regd]);
