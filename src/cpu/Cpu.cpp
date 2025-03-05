@@ -145,7 +145,7 @@ void Cpu::JMP(uint16_t instruction)
         im |= 0xFE00;
     }
 
-    std::cout << PC << " " << im << std::endl;
+    std::cout << PC << " " << im << std::endl; // retirar
 
     uint16_t nextPC = PC + im;
     if (nextPC == PC)
@@ -154,7 +154,7 @@ void Cpu::JMP(uint16_t instruction)
     }
 
     PC = nextPC;
-    std::cout << PC << " " << im << std::endl;
+    std::cout << PC << " " << im << std::endl; // retirar
 }
 
 void Cpu::JGT(uint16_t instruction)
@@ -175,10 +175,8 @@ void Cpu::JLT(uint16_t instruction)
 
 void Cpu::JEQ(uint16_t instruction)
 {   
-    
     if (flags.getZero() == 1 && flags.getCarry() == 0)
     {
-        std::cout<< "entrou!!!!!!!!!!!!" << std::endl;
         JMP(instruction);
     }
 }
