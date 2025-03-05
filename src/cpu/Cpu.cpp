@@ -435,17 +435,17 @@ void Cpu::execute()
         }
         case SHIFT_L:
         {
-            SHR(instruction.to_ullong());
+            SHL(instruction.to_ullong());
             break;
         }
         case ROTATE_R:
         {
-            // ROR(instruction.to_ullong());
+            ROR(instruction.to_ullong());
             break;
         }
         case ROTATE_L:
         {
-            // ROL(instruction.to_ullong());
+            ROL(instruction.to_ullong());
             break;
         }
         case EXIT:
