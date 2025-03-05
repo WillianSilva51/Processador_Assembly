@@ -4,23 +4,6 @@ Cpu::Cpu() : PC(0), IR(0), SP(0x8200), flags(), memory() {}
 
 Cpu::~Cpu() {}
 
-void Cpu::printRegisters()
-{
-    std::cout << "----------------------------\n";
-    std::cout << "REGISTERS:\n";
-    for (int i = 0; i < 8; i++)
-    {
-        std::cout << "R[" << i << "]: 0x"
-                  << std::setw(4) << std::setfill('0') << std::hex << std::uppercase
-                  << REG[i] << "\n";
-    }
-    std::cout << "----------------------------\n";
-    std::cout << "PC: 0x" << std::setw(4) << std::setfill('0') << std::hex << PC << "\n";
-    std::cout << "IR: 0x" << std::setw(4) << std::setfill('0') << std::hex << IR << "\n";
-    std::cout << "SP: 0x" << std::setw(4) << std::setfill('0') << std::hex << SP << "\n";
-    std::cout << "----------------------------\n";
-}
-
 void Cpu::ROL(uint16_t instruction)
 {
     uint16_t Rd = (instruction & 0x0700) >> 8;
@@ -112,26 +95,32 @@ void Cpu::SHL(uint16_t instruction)
 
 void Cpu::PSH(uint16_t instruction)
 {
+    std::cout << "Vai escrever" << std::endl;
     if (SP <= 0x81F0)
-    {
+    {   
+        std:: cout << "entrou" << std::endl;
         return;
     }
 
     uint16_t Rn = (instruction & 0x001C) >> 2;
 
+    std::cout << "Vai escrever" << std::endl;
     memory.write(SP, REG[Rn]);
     SP -= 2;
 }
 
 void Cpu::POP(uint16_t instruction)
 {
-    if (SP >= 0x8200)
-    {
+    std::cout << "Vai ler" << std::endl;
+    if (SP > 0x8200)
+    {   
+        std::cout << "entrou" << std::endl;
         return;
     }
 
     uint16_t Rd = (instruction & 0x0700) >> 8;
 
+    std::cout << "Vai ler" << std::endl;
     SP += 2;
     REG[Rd] = memory.read(SP);
 }
@@ -145,8 +134,6 @@ void Cpu::JMP(uint16_t instruction)
         im |= 0xFE00;
     }
 
-    std::cout << PC << " " << im << std::endl;
-
     uint16_t nextPC = PC + im;
     if (nextPC == PC)
     {
@@ -154,7 +141,6 @@ void Cpu::JMP(uint16_t instruction)
     }
 
     PC = nextPC;
-    std::cout << PC << " " << im << std::endl;
 }
 
 void Cpu::JGT(uint16_t instruction)
@@ -178,7 +164,6 @@ void Cpu::JEQ(uint16_t instruction)
     
     if (flags.getZero() == 1 && flags.getCarry() == 0)
     {
-        std::cout<< "entrou!!!!!!!!!!!!" << std::endl;
         JMP(instruction);
     }
 }
