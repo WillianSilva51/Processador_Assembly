@@ -242,14 +242,15 @@ void Cpu::loadProgram(const std::string &filename)
     }
 
     std::string line;
+    uint16_t address, value;
 
     while (std::getline(file, line))
     {
-        uint16_t address, value;
-
         if (sscanf(line.c_str(), "%hx: %hx", &address, &value) == 2)
             memory.write(address, value);
     }
+
+    final_Address = address;
 
     file.close();
 }
@@ -280,6 +281,12 @@ void Cpu::execute()
 {
     while (true)
     {
+        if (PC == final_Address)
+        {
+            std::cout << "Programa finalizado!" << std::endl;
+            break;
+        }
+
         IR = memory.read(PC++);
         std::bitset<16> instruction = (IR << 8) | (memory.read(PC++));
 

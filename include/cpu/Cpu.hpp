@@ -9,12 +9,13 @@
 class Cpu
 {
 private:
-    uint16_t REG[8] = {0}; // R0-R7
-    uint16_t PC;           // Program Counter
-    uint16_t IR;           // Instruction Register
-    uint16_t SP;           // Stack Pointer
-    Flags flags;           // Flags Register
-    Memory memory;         // Memory
+    uint16_t final_Address; // Endereço final do programa
+    uint16_t REG[8] = {0};  // R0-R7
+    uint16_t PC;            // Program Counter
+    uint16_t IR;            // Instruction Register
+    uint16_t SP;            // Stack Pointer
+    Flags flags;            // Flags Register
+    Memory memory;          // Memory
 
     enum OPCODE
     {
