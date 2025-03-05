@@ -47,7 +47,6 @@ void Cpu::ROR(uint16_t instruction) {
     flags.setSignFlag(REG[Rd]);
 }
 
-
 void Cpu::AND(uint16_t instruction)
 {
     uint16_t regd = (instruction & 0x0700) >> 8;
