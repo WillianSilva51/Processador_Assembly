@@ -46,11 +46,11 @@ public:
     }
     
     void setZeroFlag(bool val) {
-        flags[ZERO] = (val) ? 1 : 0;
+        flags[ZERO] = val;
     }
     
     void setCarryFlag(bool val) {
-        flags[CARRY] = (val != 0) ? 1 : 0;
+        flags[CARRY] = val;
     }
     
     
