@@ -28,7 +28,7 @@ uint16_t Memory::read(uint8_t address) const
 
 void Memory::display_accessed() const
 {
-    if (std::all_of(memory.begin(), memory.end() - 0x8200, [](const auto &m)
+    if (std::all_of(memory.begin(), memory.end() - 0x8300, [](const auto &m)
                     { return !m.second; }))
     {
         std::cout << "<NO MEMORY ACCESSED>" << std::endl;
@@ -50,7 +50,7 @@ void Memory::display_accessed() const
 
 void Memory::display_stack(const uint16_t &SP) const
 {
-    if (std::all_of(memory.begin() + 0x8200, memory.end(), [](const auto &m)
+    if (std::all_of(memory.begin() + SP, memory.end() - 0x8200, [](const auto &m)
                     { return !m.second; }))
     {
         std::cout << "<STACK NOT ACCESSED>" << std::endl;
@@ -59,11 +59,11 @@ void Memory::display_stack(const uint16_t &SP) const
 
     std::cout << "STACK ACCESSED:" << std::endl;
 
-    for (size_t i = 0x8200; i < (size_t)SP; i += 2)
+    for (size_t i = (size_t)SP; i < 0x8200; i += 2)
     {
         if (memory[i].second)
         {
-            std::bitset<16> memory_accessed = (memory[i].first << 8) | memory[i + 1].first;
+            std::bitset<16> memory_accessed = (memory[i].first << 8);
 
             std::cout << formatHex << i << ": 0x" << formatHex << memory_accessed.to_ulong() << std::endl;
         }

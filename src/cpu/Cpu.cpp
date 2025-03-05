@@ -104,7 +104,8 @@ void Cpu::SHL(uint16_t instruction)
 void Cpu::PSH(uint16_t instruction)
 {
 
-    if (SP <= 0x81F0) {
+    if (SP <= 0x81F0)
+    {
         return;
     }
 
@@ -112,12 +113,12 @@ void Cpu::PSH(uint16_t instruction)
 
     memory.write(SP, REG[Rn]);
     SP -= 2;
-    printRegisters();
 }
 
 void Cpu::POP(uint16_t instruction)
 {
-    if (SP >= 0x8200){
+    if (SP >= 0x8200)
+    {
         return;
     }
 
@@ -125,34 +126,31 @@ void Cpu::POP(uint16_t instruction)
 
     SP += 2;
     REG[Rd] = memory.read(SP);
-    printRegisters();
 }
-
 
 void Cpu::JMP(uint16_t instruction)
 {
     uint16_t im = (instruction & 0x0FFF) >> 2;
-    
+
     if ((im & (1 << 8)) != 0)
     {
         im |= 0xFE00;
     }
-    
+
     uint16_t nextPC = PC + im;
     if (nextPC == PC)
     {
         return;
     }
-    
+
     PC = nextPC;
-    printRegisters();
 }
 
 void Cpu::JGT(uint16_t instruction)
 {
     if (flags.getCarry() == 0 && flags.getZero() == 0)
     {
-        JMP (instruction);
+        JMP(instruction);
     }
 }
 
@@ -168,7 +166,7 @@ void Cpu::JEQ(uint16_t instruction)
 {
     if (flags.getZero() == 1 && flags.getCarry() == 0)
     {
-       JMP(instruction);
+        JMP(instruction);
     }
 }
 
@@ -182,7 +180,16 @@ void Cpu::CMP(uint16_t instruction)
 
     flags.setZeroFlag(val_rm == val_rn);
     flags.setCarryFlag(val_rm < val_rn);
-    printRegisters();
+}
+
+void Cpu::ADD(uint16_t instruction)
+{
+    uint16_t regd = (instruction & 0x0700) >> 8; // Valor do Registrador de destino
+    uint16_t regm = (instruction & 0x00E0) >> 5; // Valor do primeiro registrador
+    uint16_t regn = (instruction & 0x001C) >> 2; // Valor do segundo registrador
+
+    REG[regd] = REG[regm] + REG[regn];
+    flags.setFlags(REG[regm], REG[regn], REG[regd], '+');
 }
 
 void Cpu::SUB(uint16_t instruction)
@@ -194,18 +201,17 @@ void Cpu::SUB(uint16_t instruction)
     REG[regd] = REG[regm] - REG[regn];
 
     flags.setFlags(REG[regm], REG[regn], REG[regd], '-');
-    printRegisters();
 }
 
-void Cpu::ADD(uint16_t instruction)
+void Cpu::MUL(uint16_t instruction)
 {
     uint16_t regd = (instruction & 0x0700) >> 8;
     uint16_t regm = (instruction & 0x00E0) >> 5; 
     uint16_t regn = (instruction & 0x001C) >> 2; 
 
-    REG[regd] = REG[regm] + REG[regn];
-    flags.setFlags(REG[regm], REG[regn], REG[regd], '+');
-    printRegisters();
+    REG[regd] = REG[regm] * REG[regn];
+
+    flags.setFlags(REG[regm], REG[regn], REG[regd], '*');
 }
 
 void Cpu::MOV(uint16_t instruction)
@@ -223,7 +229,24 @@ void Cpu::MOV(uint16_t instruction)
         int16_t src = (int16_t)(instruction & 0x00FF);
         REG[reg_dest] = src;
     }
-    printRegisters();
+}
+
+void Cpu::STR(uint16_t instruction)
+{
+    uint16_t regm = (instruction & 0x0700) >> 8;
+    uint16_t regn = (instruction & 0x00E0) >> 5;
+
+    memory.write(REG[regn], REG[regm]);
+}
+
+void Cpu::LDR(uint16_t instruction)
+{
+    uint16_t regd = (instruction & 0x0700) >> 8;
+    uint16_t addr_reg = (instruction & 0x00E0) >> 5;
+    uint16_t offset = (instruction & 0x001C) >> 2;
+
+    uint16_t addr = REG[addr_reg] + offset;
+    REG[regd] = memory.read(addr);
 }
 
 void Cpu::NOP()
@@ -349,10 +372,12 @@ void Cpu::execute()
         }
         case STORE:
         {
+            STR(instruction.to_ullong());
             break;
         }
         case LOAD:
         {
+            LDR(instruction.to_ullong());
             break;
         }
         case ULA_ADD:
@@ -360,7 +385,6 @@ void Cpu::execute()
             ADD(instruction.to_ullong());
             break;
         }
-
         case ULA_SUB:
         {
             SUB(instruction.to_ullong());
@@ -368,6 +392,7 @@ void Cpu::execute()
         }
         case ULA_MUL:
         {
+            MUL(instruction.to_ullong());
             break;
         }
         case ULA_AND:
@@ -402,10 +427,12 @@ void Cpu::execute()
         }
         case ROTATE_R:
         {
+            // ROR(instruction.to_ullong());
             break;
         }
         case ROTATE_L:
         {
+            // ROL(instruction.to_ullong());
             break;
         }
         case EXIT:
