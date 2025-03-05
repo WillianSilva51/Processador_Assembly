@@ -67,6 +67,6 @@ public:
     void printRegisters();
 
     void execute();
-    void loadProgram(const std::string &filename);
+    void loadProgram(std::string &filename);
     void displayState() const;
 };

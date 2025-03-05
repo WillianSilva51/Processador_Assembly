@@ -21,7 +21,8 @@ void Cpu::printRegisters()
     std::cout << "----------------------------\n";
 }
 
-void Cpu::ROL(uint16_t instruction) {
+void Cpu::ROL(uint16_t instruction)
+{
     uint16_t Rd = (instruction & 0x0700) >> 8;
     uint16_t Rm = (instruction & 0x00E0) >> 5;
 
@@ -29,12 +30,13 @@ void Cpu::ROL(uint16_t instruction) {
 
     REG[Rd] = (REG[Rm] << 1) | (carry_in);
 
-    flags.setCarryFlag (carry_in);
+    flags.setCarryFlag(carry_in);
     flags.setZeroFlag(REG[Rd]);
     flags.setSignFlag(REG[Rd]);
 }
 
-void Cpu::ROR(uint16_t instruction) {
+void Cpu::ROR(uint16_t instruction)
+{
     uint16_t Rd = (instruction & 0x0700) >> 8;
     uint16_t Rm = (instruction & 0x00E0) >> 5;
 
@@ -42,7 +44,7 @@ void Cpu::ROR(uint16_t instruction) {
 
     REG[Rd] = (REG[Rm] >> 1) | (carry_in << 15);
 
-    flags.setCarryFlag (carry_in);
+    flags.setCarryFlag(carry_in);
     flags.setZeroFlag(REG[Rd]);
     flags.setSignFlag(REG[Rd]);
 }
@@ -50,36 +52,44 @@ void Cpu::ROR(uint16_t instruction) {
 void Cpu::AND(uint16_t instruction)
 {
     uint16_t regd = (instruction & 0x0700) >> 8;
-    uint16_t regm = (instruction & 0x00E0) >> 7;
-    uint16_t regn = (instruction & 0x003C) >> 2;
+    uint16_t regm = (instruction & 0x00E0) >> 5;
+    uint16_t regn = (instruction & 0x001C) >> 2;
 
     REG[regd] = REG[regm] & REG[regn];
+    flags.setZeroFlag(REG[regd]);
+    flags.setSignFlag(REG[regd]);
 }
 
 void Cpu::OR(uint16_t instruction)
 {
     uint16_t regd = (instruction & 0x0700) >> 8;
-    uint16_t regm = (instruction & 0x00E0) >> 7;
-    uint16_t regn = (instruction & 0x003C) >> 2;
+    uint16_t regm = (instruction & 0x00E0) >> 5;
+    uint16_t regn = (instruction & 0x001C) >> 2;
 
     REG[regd] = REG[regm] | REG[regn];
+    flags.setZeroFlag(REG[regd]);
+    flags.setSignFlag(REG[regd]);
 }
 
 void Cpu::NOT(uint16_t instruction)
 {
     uint16_t regd = (instruction & 0x0700) >> 8;
-    uint16_t regm = (instruction & 0x00E0) >> 7;
+    uint16_t regm = (instruction & 0x00E0) >> 5;
 
     REG[regd] = ~REG[regm];
+    flags.setZeroFlag(REG[regd]);
+    flags.setSignFlag(REG[regd]);
 }
 
 void Cpu::XOR(uint16_t instruction)
 {
     uint16_t regd = (instruction & 0x0700) >> 8;
-    uint16_t regm = (instruction & 0x00E0) >> 7;
-    uint16_t regn = (instruction & 0x003C) >> 2;
+    uint16_t regm = (instruction & 0x00E0) >> 5;
+    uint16_t regn = (instruction & 0x001C) >> 2;
 
     REG[regd] = REG[regm] ^ REG[regn];
+    flags.setZeroFlag(REG[regd]);
+    flags.setSignFlag(REG[regd]);
 }
 
 void Cpu::SHR(uint16_t instruction)
@@ -102,7 +112,6 @@ void Cpu::SHL(uint16_t instruction)
 
 void Cpu::PSH(uint16_t instruction)
 {
-
     if (SP <= 0x81F0)
     {
         return;
@@ -177,10 +186,10 @@ void Cpu::JEQ(uint16_t instruction)
 void Cpu::CMP(uint16_t instruction)
 {
     uint16_t Rm = (instruction & 0x00E0) >> 5;
-    uint16_t Rn = (instruction & 0x001F) >> 2; 
+    uint16_t Rn = (instruction & 0x001C) >> 2;
 
-    uint16_t val_rm = REG[Rm]; 
-    uint16_t val_rn = REG[Rn]; 
+    uint16_t val_rm = REG[Rm];
+    uint16_t val_rn = REG[Rn];
 
     flags.setZeroFlag(val_rm == val_rn);
     flags.setCarryFlag(val_rm >= val_rn);
@@ -210,8 +219,8 @@ void Cpu::SUB(uint16_t instruction)
 void Cpu::MUL(uint16_t instruction)
 {
     uint16_t regd = (instruction & 0x0700) >> 8;
-    uint16_t regm = (instruction & 0x00E0) >> 5; 
-    uint16_t regn = (instruction & 0x001C) >> 2; 
+    uint16_t regm = (instruction & 0x00E0) >> 5;
+    uint16_t regn = (instruction & 0x001C) >> 2;
 
     REG[regd] = REG[regm] * REG[regn];
 
@@ -266,8 +275,13 @@ void Cpu::HALT()
     exit(0);
 }
 
-void Cpu::loadProgram(const std::string &filename)
+void Cpu::loadProgram(std::string &filename)
 {
+    if (filename.find(".txt") == std::string::npos)
+    {
+        filename += ".txt";
+    }
+
     std::ifstream file("codes/" + filename);
 
     if (!file || !file.is_open())
@@ -315,7 +329,7 @@ void Cpu::execute()
 {
     while (true)
     {
-        if (PC >= final_Address)
+        if (PC > final_Address)
         {
             std::cout << "Programa finalizado!" << std::endl;
             displayState();
@@ -426,17 +440,17 @@ void Cpu::execute()
         }
         case SHIFT_L:
         {
-            SHR(instruction.to_ullong());
+            SHL(instruction.to_ullong());
             break;
         }
         case ROTATE_R:
         {
-            // ROR(instruction.to_ullong());
+            ROR(instruction.to_ullong());
             break;
         }
         case ROTATE_L:
         {
-            // ROL(instruction.to_ullong());
+            ROL(instruction.to_ullong());
             break;
         }
         case EXIT:
