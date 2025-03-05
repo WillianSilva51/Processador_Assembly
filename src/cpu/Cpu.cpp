@@ -21,6 +21,33 @@ void Cpu::printRegisters()
     std::cout << "----------------------------\n";
 }
 
+void Cpu::ROL(uint16_t instruction) {
+    uint16_t Rd = (instruction & 0x0700) >> 8;
+    uint16_t Rm = (instruction & 0x00E0) >> 5;
+
+    bool carry_in = (REG[Rm] >> 15) & 1;
+
+    REG[Rd] = (REG[Rm] << 1) | (carry_in);
+
+    flags.setCarryFlag (carry_in);
+    flags.setZeroFlag(REG[Rd]);
+    flags.setSignFlag(REG[Rd]);
+}
+
+void Cpu::ROR(uint16_t instruction) {
+    uint16_t Rd = (instruction & 0x0700) >> 8;
+    uint16_t Rm = (instruction & 0x00E0) >> 5;
+
+    bool carry_in = REG[Rm] & 1;
+
+    REG[Rd] = (REG[Rm] >> 1) | (carry_in << 15);
+
+    flags.setCarryFlag (carry_in);
+    flags.setZeroFlag(REG[Rd]);
+    flags.setSignFlag(REG[Rd]);
+}
+
+
 void Cpu::AND(uint16_t instruction)
 {
     uint16_t regd = (instruction & 0x0700) >> 8;
@@ -147,16 +174,13 @@ void Cpu::JEQ(uint16_t instruction)
 
 void Cpu::CMP(uint16_t instruction)
 {
-    uint16_t Rm = (instruction & 0x00E0) >> 5; // Registrador de origem (Rm)
-    uint16_t Rn = (instruction & 0x001C) >> 2; // Registrador de destino (Rn)
+    uint16_t Rm = (instruction & 0x00E0) >> 5;
+    uint16_t Rn = (instruction & 0x001C) >> 2; 
 
-    uint16_t val_rm = REG[Rm]; // Valor de Rm
-    uint16_t val_rn = REG[Rn]; // Valor de Rn
+    uint16_t val_rm = REG[Rm]; 
+    uint16_t val_rn = REG[Rn]; 
 
-    // Verificando a condição de igualdade (Z = 1 se Rm == Rn)
     flags.setZeroFlag(val_rm == val_rn);
-
-    // Verificando a condição de carry (C = 1 se Rm < Rn)
     flags.setCarryFlag(val_rm < val_rn);
     printRegisters();
 }
@@ -175,9 +199,9 @@ void Cpu::SUB(uint16_t instruction)
 
 void Cpu::ADD(uint16_t instruction)
 {
-    uint16_t regd = (instruction & 0x0700) >> 8; // Valor do Registrador de destino
-    uint16_t regm = (instruction & 0x00E0) >> 5; // Valor do primeiro registrador
-    uint16_t regn = (instruction & 0x001C) >> 2; // Valor do segundo registrador
+    uint16_t regd = (instruction & 0x0700) >> 8;
+    uint16_t regm = (instruction & 0x00E0) >> 5; 
+    uint16_t regn = (instruction & 0x001C) >> 2; 
 
     REG[regd] = REG[regm] + REG[regn];
     flags.setFlags(REG[regm], REG[regn], REG[regd], '+');

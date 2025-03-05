@@ -41,13 +41,15 @@ public:
         flags[SIGN] = (result & 0x8000) != 0;
     }
 
+    void setSignFlag(uint16_t val){
+        flags[SIGN] = (val >> 15) & 1;
+    }
+    
     void setZeroFlag(uint16_t val) {
-        // Configura a flag Zero (Z) para 1 se o valor for zero, caso contrário 0
         flags[ZERO] = (val == 0) ? 1 : 0;
     }
     
-    void setCarryFlag(uint16_t val) {
-        // Configura a flag Carry (C) para 1 se o valor for 1 (indicando carry), caso contrário 0
+    void setCarryFlag(bool val) {
         flags[CARRY] = (val != 0) ? 1 : 0;
     }
     
