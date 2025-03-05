@@ -161,7 +161,6 @@ void Cpu::JLT(uint16_t instruction)
 
 void Cpu::JEQ(uint16_t instruction)
 {   
-    
     if (flags.getZero() == 1 && flags.getCarry() == 0)
     {
         JMP(instruction);
