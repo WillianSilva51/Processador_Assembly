@@ -43,15 +43,15 @@ public:
     void NOP();
     void HALT();
     void MOV(uint16_t instruction);
-    void STR();
-    void LDR();
+    void STR(uint16_t instruction);
+    void LDR(uint16_t instruction);
     void ADD(uint16_t instruction);
     void SUB(uint16_t instruction);
-    void MUL();
-    bool AND();
-    bool OR();
-    bool NOT();
-    bool XOR();
+    void MUL(uint16_t instruction);
+    void AND(uint16_t instruction);
+    void OR(uint16_t instruction);
+    void NOT(uint16_t instruction);
+    void XOR(uint16_t instruction);
     void PSH(uint16_t instruction);
     void POP(uint16_t instruction);
     void CMP(uint16_t instruction);
@@ -59,10 +59,10 @@ public:
     void JEQ(uint16_t instruction);
     void JLT(uint16_t instruction);
     void JGT(uint16_t instruction);
-    void SHR();
-    void SHL();
-    void ROR();
-    void ROL();
+    void SHR(uint16_t instruction);
+    void SHL(uint16_t instruction);
+    void ROR(uint16_t instruction);
+    void ROL(uint16_t instruction);
     void printRegisters();
 
     void execute();

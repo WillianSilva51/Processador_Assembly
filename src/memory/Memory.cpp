@@ -60,7 +60,7 @@ void Memory::display_stack(const uint16_t &SP) const
     if (std::all_of(memory.begin() + 0x8200, memory.end(), [](const auto &m)
                     { return !m.second; }))
     {
-        std::cout << "<STACK NOT ACCESSED" << std::endl;
+        std::cout << "<STACK NOT ACCESSED>" << std::endl;
         return;
     }
 
