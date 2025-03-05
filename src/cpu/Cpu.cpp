@@ -129,12 +129,14 @@ void Cpu::POP(uint16_t instruction)
 
 void Cpu::JMP(uint16_t instruction)
 {
-    uint16_t im = (instruction & 0x0FFF) >> 2;
+    uint16_t im = (instruction & 0x078C) >> 2;
 
     if ((im & (1 << 8)) != 0)
     {
         im |= 0xFE00;
     }
+
+    std::cout << PC << " " << im << std::endl;
 
     uint16_t nextPC = PC + im;
     if (nextPC == PC)
@@ -143,6 +145,7 @@ void Cpu::JMP(uint16_t instruction)
     }
 
     PC = nextPC;
+    std::cout << PC << " " << im << std::endl;
 }
 
 void Cpu::JGT(uint16_t instruction)
@@ -162,9 +165,11 @@ void Cpu::JLT(uint16_t instruction)
 }
 
 void Cpu::JEQ(uint16_t instruction)
-{
+{   
+    
     if (flags.getZero() == 1 && flags.getCarry() == 0)
     {
+        std::cout<< "entrou!!!!!!!!!!!!" << std::endl;
         JMP(instruction);
     }
 }
@@ -172,20 +177,20 @@ void Cpu::JEQ(uint16_t instruction)
 void Cpu::CMP(uint16_t instruction)
 {
     uint16_t Rm = (instruction & 0x00E0) >> 5;
-    uint16_t Rn = (instruction & 0x001C) >> 2; 
+    uint16_t Rn = (instruction & 0x001F) >> 2; 
 
     uint16_t val_rm = REG[Rm]; 
     uint16_t val_rn = REG[Rn]; 
 
     flags.setZeroFlag(val_rm == val_rn);
-    flags.setCarryFlag(val_rm < val_rn);
+    flags.setCarryFlag(val_rm >= val_rn);
 }
 
 void Cpu::ADD(uint16_t instruction)
 {
-    uint16_t regd = (instruction & 0x0700) >> 8; // Valor do Registrador de destino
-    uint16_t regm = (instruction & 0x00E0) >> 5; // Valor do primeiro registrador
-    uint16_t regn = (instruction & 0x001C) >> 2; // Valor do segundo registrador
+    uint16_t regd = (instruction & 0x0700) >> 8; 
+    uint16_t regm = (instruction & 0x00E0) >> 5; 
+    uint16_t regn = (instruction & 0x001C) >> 2;
 
     REG[regd] = REG[regm] + REG[regn];
     flags.setFlags(REG[regm], REG[regn], REG[regd], '+');

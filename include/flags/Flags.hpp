@@ -45,8 +45,8 @@ public:
         flags[SIGN] = (val >> 15) & 1;
     }
     
-    void setZeroFlag(uint16_t val) {
-        flags[ZERO] = (val == 0) ? 1 : 0;
+    void setZeroFlag(bool val) {
+        flags[ZERO] = (val) ? 1 : 0;
     }
     
     void setCarryFlag(bool val) {

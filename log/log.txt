@@ -1,0 +1,2 @@
+2025-03-05 16:01:23 - ERROR: Could not open file n.
+2025-03-05 17:15:26 - ERROR: Could not open file opBasicas,txt.
