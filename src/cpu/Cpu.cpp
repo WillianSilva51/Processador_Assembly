@@ -78,7 +78,7 @@ void Cpu::SHR(uint16_t instruction)
 {
     uint16_t regd = (instruction >> 8) & 7;
     uint16_t regm = (instruction >> 5) & 7;
-    uint16_t n = instruction & 31;
+    uint16_t n = instruction & 0x001F;
 
     REG[regd] = REG[regm] >> n;
 }
@@ -87,7 +87,7 @@ void Cpu::SHL(uint16_t instruction)
 {
     uint16_t regd = (instruction >> 8) & 7;
     uint16_t regm = (instruction >> 5) & 7;
-    uint16_t n = instruction & 31;
+    uint16_t n = instruction & 0x001F;
 
     REG[regd] = REG[regm] << n;
 }
@@ -224,19 +224,31 @@ void Cpu::MOV(uint16_t instruction)
 
 void Cpu::STR(uint16_t instruction)
 {
-    uint16_t regm = (instruction & 0x0700) >> 8;
-    uint16_t regn = (instruction & 0x00E0) >> 5;
+    uint16_t im_or_reg = (instruction & 0x0800) >> 11;
+    uint16_t reg_dest = (instruction & 0x0700) >> 8;
 
-    memory.write(REG[regn], REG[regm]);
+    if (im_or_reg == 0)
+    {
+        uint16_t regm = (instruction & 0x001C) >> 2;
+
+        memory.write(REG[reg_dest], REG[regm]); 
+    }
+    else if (im_or_reg == 1)
+    {
+        uint16_t im1 = (instruction & 0x0700) >> 8;
+        uint16_t im2 = (instruction & 0x001F);
+        uint16_t src = (im1 << 8) | im2;
+
+        memory.write(REG[reg_dest], src);
+    }
 }
 
 void Cpu::LDR(uint16_t instruction)
 {
     uint16_t regd = (instruction & 0x0700) >> 8;
     uint16_t addr_reg = (instruction & 0x00E0) >> 5;
-    uint16_t offset = (instruction & 0x001C) >> 2;
 
-    uint16_t addr = REG[addr_reg] + offset;
+    uint16_t addr = REG[addr_reg];
     REG[regd] = memory.read(addr);
 }
 
