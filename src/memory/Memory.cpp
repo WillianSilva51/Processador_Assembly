@@ -18,16 +18,15 @@ void Memory::write(uint16_t address, uint16_t value)
     uint8_t low_byte = value & 0xFF;
     uint8_t high_byte = (value >> 8) & 0xFF;
 
-    memory[address] = {high_byte, false};
-    memory[address + 1] = {low_byte, false};
+    memory[address] = {high_byte, true};
+    memory[address + 1] = {low_byte, true};
 }
 
 uint16_t Memory::read(uint16_t address) const
 {
     if (address >= memory.size())
         throw std::range_error("ERROR: Memory address out of range");
-
-    memory[address].second = true;
+        
     return memory[address].first;
 }
 

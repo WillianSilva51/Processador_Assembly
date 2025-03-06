@@ -1,6 +1,6 @@
 #include "cpu/Cpu.hpp"
 
-Cpu::Cpu() : PC(0), IR(0), SP(0x8200), flags(), memory() {}
+Cpu::Cpu() : final_Address(0), PC(0), IR(0), SP(0x8200), flags(), memory() {}
 
 Cpu::~Cpu() {}
 
@@ -9,16 +9,17 @@ void Cpu::ROL(uint16_t instruction)
     uint16_t Rd = (instruction & 0x0700) >> 8;
     uint16_t Rm = (instruction & 0x00E0) >> 5;
 
-    bool carry_in = (REG[Rm] >> 15) & 1; 
+    bool carry_in = (REG[Rm] >> 15) & 1;
 
     REG[Rd] = (REG[Rm] << 1) | carry_in;
 
-    flags.setCarryFlag(carry_in); 
-    flags.setZeroFlag(REG[Rd]); 
+    flags.setCarryFlag(carry_in);
+    flags.setZeroFlag(REG[Rd]);
     flags.setSignFlag(REG[Rd]);
 }
 
-void Cpu::ROR(uint16_t instruction) {
+void Cpu::ROR(uint16_t instruction)
+{
     uint16_t Rd = (instruction & 0x0700) >> 8;
     uint16_t Rm = (instruction & 0x00E0) >> 5;
 
@@ -81,6 +82,8 @@ void Cpu::SHR(uint16_t instruction)
     uint16_t n = instruction & 0x001F;
 
     REG[regd] = REG[regm] >> n;
+    flags.setZeroFlag(REG[regd]);
+    flags.setSignFlag(REG[regd]);
 }
 
 void Cpu::SHL(uint16_t instruction)
@@ -90,12 +93,14 @@ void Cpu::SHL(uint16_t instruction)
     uint16_t n = instruction & 0x001F;
 
     REG[regd] = REG[regm] << n;
+    flags.setZeroFlag(REG[regd]);
+    flags.setSignFlag(REG[regd]);
 }
 
 void Cpu::PSH(uint16_t instruction)
 {
     if (SP <= 0x81F0)
-    {   
+    {
         return;
     }
 
@@ -109,7 +114,7 @@ void Cpu::POP(uint16_t instruction)
 {
 
     if (SP > 0x8200)
-    {  
+    {
         return;
     }
 
@@ -154,7 +159,7 @@ void Cpu::JLT(uint16_t instruction)
 }
 
 void Cpu::JEQ(uint16_t instruction)
-{   
+{
     if (flags.getZero() == 1 && flags.getCarry() == 0)
     {
         JMP(instruction);
@@ -175,8 +180,8 @@ void Cpu::CMP(uint16_t instruction)
 
 void Cpu::ADD(uint16_t instruction)
 {
-    uint16_t regd = (instruction & 0x0700) >> 8; 
-    uint16_t regm = (instruction & 0x00E0) >> 5; 
+    uint16_t regd = (instruction & 0x0700) >> 8;
+    uint16_t regm = (instruction & 0x00E0) >> 5;
     uint16_t regn = (instruction & 0x001C) >> 2;
 
     REG[regd] = REG[regm] + REG[regn];
@@ -224,22 +229,20 @@ void Cpu::MOV(uint16_t instruction)
 
 void Cpu::STR(uint16_t instruction)
 {
-    uint16_t im_or_reg = (instruction & 0x0800) >> 11;
-    uint16_t reg_dest = (instruction & 0x0700) >> 8;
+    std::bitset<16> instr(instruction);
+    uint16_t regd = ((instruction >> 5) & 0x07);
 
-    if (im_or_reg == 0)
+    if (instr[11] == 0)
     {
-        uint16_t regm = (instruction & 0x001C) >> 2;
+        uint16_t regn = ((instruction >> 2) & 0x07);
 
-        memory.write(REG[reg_dest], REG[regm]); 
+        memory.write(REG[regd], REG[regn]);
     }
-    else if (im_or_reg == 1)
+    else if (instr[11] == 1)
     {
-        uint16_t im1 = (instruction & 0x0700) >> 8;
-        uint16_t im2 = (instruction & 0x001F);
-        uint16_t src = (im1 << 8) | im2;
+        uint16_t imm = (((instruction >> 8) & 0x07) << 5) | (instruction & 0x1F);
 
-        memory.write(REG[reg_dest], src);
+        memory.write(REG[regd], imm);
     }
 }
 
