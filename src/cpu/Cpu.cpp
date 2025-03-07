@@ -333,6 +333,7 @@ void Cpu::execute()
         std::bitset<16> instruction = (IR << 8) | (memory.read(PC++));
 
         uint16_t opcode = (IR >> 4);
+        IR = instruction.to_ullong();
 
         switch (opcode)
         {
