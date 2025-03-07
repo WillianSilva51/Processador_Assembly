@@ -66,6 +66,21 @@ Agradecemos às seguintes pessoas que contribuíram para este projeto:
           <a href="https://github.com/Iagoolo">Iago de Oliveira</a>
         </sub>
       </a></td>
+    <td>
+      <a href="#" title="Willian Silva">
+        <img src="https://avatars.githubusercontent.com/u/161375086?v=4" width="100px;" alt="Foto do Willian Silva no GitHub" /><br>
+        <sub>
+          <a href="https://github.com/williansilva51">Willian Silva</a>
+        </sub>
+      </a>
+    </td>
+    <td>
+      <a href="#" title="Calebe Mesquita">
+        <img src="https://avatars.githubusercontent.com/u/136706702?v=4" width="100px;" alt="Foto do Calebe Mesquita no GitHub" /><br>
+        <sub>
+          <a href="https://github.com/Calebemesquita">Calebe Mesquita</a>
+        </sub>
+      </a>
     </td>
   </tr>
 </table>
